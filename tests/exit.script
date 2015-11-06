@@ -1,0 +1,14 @@
+Script started on Fri 06 Nov 2015 02:32:58 PM PST
+[eagui020@hammer rshell]$ make all
+g++ -Wall -Werror -ansi -pedantic src/rshell.cpp -o bin/rshell
+[eagui020@hammer rshell]$ bin/rshell
+[eagui020@hammer.cs.ucr.edu]$ echo hello; echo world; exit
+hello
+world
+[eagui020@hammer rshell]$ bin/rshell
+[eagui020@hammer.cs.ucr.edu]$ exit
+[eagui020@hammer rshell]$ exit
+exit
+
+Script done on Fri 06 Nov 2015 02:33:46 PM PST
+

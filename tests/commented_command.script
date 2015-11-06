@@ -1,0 +1,17 @@
+Script started on Fri 06 Nov 2015 02:30:41 PM PST
+[eagui020@hammer rshell]$ make all
+g++ -Wall -Werror -ansi -pedantic src/rshell.cpp -o bin/rshell
+[eagui020@hammer rshell]$ bin/rshell
+[eagui020@hammer.cs.ucr.edu]$ echo hello # but not this
+hello
+[eagui020@hammer.cs.ucr.edu]$ ls -a
+.  ..  bin  .git  LICENSE  Makefile  README.md	src  tests
+[eagui020@hammer.cs.ucr.edu]$ ls #-a
+bin  LICENSE  Makefile	README.md  src	tests
+[eagui020@hammer.cs.ucr.edu]$ ls
+bin  LICENSE  Makefile	README.md  src	tests
+[eagui020@hammer.cs.ucr.edu]$ exit
+[eagui020@hammer rshell]$ exit
+exit
+
+Script done on Fri 06 Nov 2015 02:32:20 PM PST

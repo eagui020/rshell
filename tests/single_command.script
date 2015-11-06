@@ -1,28 +1,17 @@
-#!/bin/sh 
+Script started on Fri 06 Nov 2015 02:20:07 PM PST
+[atali001@hammer rshell]$ bin/rshell
+[atali001@hammer.cs.ucr.edu]$ echo hello world
+hello world
+[atali001@hammer.cs.ucr.edu]$ ls
+bin  LICENSE  Makefile	README.md  single_command  src	tests
+[atali001@hammer.cs.ucr.edu]$ mkdir testDir
+[atali001@hammer.cs.ucr.edu]$ ls
+bin  LICENSE  Makefile	README.md  single_command  src	testDir	 tests
+[atali001@hammer.cs.ucr.edu]$ rmdir testDir
+[atali001@hammer.cs.ucr.edu]$ ls -a
+.  ..  bin  .git  LICENSE  Makefile  README.md	single_command	src  tests
+[atali001@hammer.cs.ucr.edu]$ exit
+[atali001@hammer rshell]$ exit
+exit
 
-{
-echo "exit"
-}| ./bin/rshell
-
-echo "ls"
-
-{
-echo "ls "
-echo "exit"
-}| ./bin/rshell
-
-
-echo "echo hello world"
-echo " "
-
-{
-echo "echo hello world "
-echo "exit"
-}| ./bin/rshell
-
-echo "ls -a"
-
-{
-echo "ls -a"
-echo "exit"
-}| ./bin/rshell
+Script done on Fri 06 Nov 2015 02:21:56 PM PST

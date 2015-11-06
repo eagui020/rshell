@@ -1,63 +1,32 @@
-#!/bin/sh 
+Script started on Fri 06 Nov 2015 02:32:15 PM PST
+[atali001@hammer rshell]$ bin/rshell
+[atali001@hammer.cs.ucr.edu]$ echo hello world && echo goodbye world
+hello world
+goodbye world
+[atali001@hammer.cs.ucr.edu]$ echo print this || echo but don't print this
+print this
+[atali001@hammer.cs.ucr.edu]$ make a cake && echo yay we made a cake
+make: *** No rule to make target `a'.  Stop.
+[atali001@hammer.cs.ucr.edu]$ bake a cake || echo baking cake failed
+Command execution failed. Command 'bake' not found.
+baking cake failed
+[atali001@hammer.cs.ucr.edu]$ ls ; mkdir testDir ; ls ; rmdir testDir && echo removed testDir ; ls
+bin  LICENSE  Makefile	README.md  src	tests  test.script
+bin  LICENSE  Makefile	README.md  src	testDir	 tests	test.script
+removed testDir
+bin  LICENSE  Makefile	README.md  src	tests  test.script
+[atali001@hammer.cs.ucr.edu]$ echo hello ; bake cake || echo can't bake cake && echo I can echo that I didnt though
+hello
+Command execution failed. Command 'bake' not found.
+can't bake cake
+I can echo that I didnt though
+[atali001@hammer.cs.ucr.edu]$ hack the CIA mainframe || echo this isn't a movie; ls -a && echo there's a reasonable command
+Command execution failed. Command 'hack' not found.
+this isn't a movie
+.  ..  bin  .git  LICENSE  Makefile  README.md	src  tests  test.script
+there's a reasonable command
+[atali001@hammer.cs.ucr.edu]$ exit
+[atali001@hammer rshell]$ exit
+exit
 
-{
-echo "exit"
-}| ./bin/rshell
-
-echo "ls && echo this should be printed"
-
-{
-echo "ls && echo this should be printed"
-echo "exit"
-}| ./bin/rshell
-
-
-echo "echo round 2 || echo this should not be printed"
-
-{
-echo "echo round 2 || echo this should not be printed"
-echo "exit"
-}| ./bin/rshell
-
-echo "echo round 3 ; echo this should be printed"
-
-{
-echo "echo round 3 ; echo this should be printed"
-echo "exit"
-}| ./bin/rshell
-
-
-echo "twirl for me shell ; echo this should be printed"
-
-{
-echo "twirl for me shell ; echo this should be printed"
-echo "exit"
-}| ./bin/rshell
-
-echo "hack the CIA && echo this should not be printed"
-
-{
-echo "hack the CIA && echo this should not be printed"
-echo "exit"
-}| ./bin/rshell
-
-echo "hack the CIA || echo this should be printed"
-
-{
-echo "hack the CIA || echo this should be printed"
-echo "exit"
-}| ./bin/rshell
-
-echo "echo round 5 && echo this should be printed || echo but this should not"
-
-{
-echo "echo round 5 && echo this should be printed || echo but this should not"
-echo "exit"
-}| ./bin/rshell
-
-echo "bake a cake && echo this should not be printed || echo nor should this"
-
-{
-echo "bake a cake && echo this should not be printed || echo nor should this"
-echo "exit"
-}| ./bin/rshell
+Script done on Fri 06 Nov 2015 02:39:45 PM PST
