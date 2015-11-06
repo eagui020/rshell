@@ -126,12 +126,12 @@ int executeProgram(char **commandLine)
         cout << "Forking child failed." << endl;
         exit(2);
     }
-    else if(pid == 0)
+    else if(pid == 0) //parent
     {
         execvp(*commandLine, commandLine); //execute and save state
         cout << "Command execution failed. Command '"
 	     << *commandLine << "' not found." << endl;
-  	exit(1);
+  	    exit(1);
     }
     else
     {
@@ -139,7 +139,7 @@ int executeProgram(char **commandLine)
     	if(WIFEXITED(programStatus)) //Check status of child
     	{
             if(WEXITSTATUS(programStatus) == 0) //execvp never ended
-        	    {
+        	{
             	//cout << "Program succeeded." << endl;
     		    return 0;
         	}

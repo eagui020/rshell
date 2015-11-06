@@ -1,0 +1,28 @@
+#!/bin/sh 
+
+{
+echo "exit"
+}| ./bin/rshell
+
+echo "ls"
+
+{
+echo "ls "
+echo "exit"
+}| ./bin/rshell
+
+
+echo "echo hello world"
+echo " "
+
+{
+echo "echo hello world "
+echo "exit"
+}| ./bin/rshell
+
+echo "ls -a"
+
+{
+echo "ls -a"
+echo "exit"
+}| ./bin/rshell

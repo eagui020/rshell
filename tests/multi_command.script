@@ -1,0 +1,63 @@
+#!/bin/sh 
+
+{
+echo "exit"
+}| ./bin/rshell
+
+echo "ls && echo this should be printed"
+
+{
+echo "ls && echo this should be printed"
+echo "exit"
+}| ./bin/rshell
+
+
+echo "echo round 2 || echo this should not be printed"
+
+{
+echo "echo round 2 || echo this should not be printed"
+echo "exit"
+}| ./bin/rshell
+
+echo "echo round 3 ; echo this should be printed"
+
+{
+echo "echo round 3 ; echo this should be printed"
+echo "exit"
+}| ./bin/rshell
+
+
+echo "twirl for me shell ; echo this should be printed"
+
+{
+echo "twirl for me shell ; echo this should be printed"
+echo "exit"
+}| ./bin/rshell
+
+echo "hack the CIA && echo this should not be printed"
+
+{
+echo "hack the CIA && echo this should not be printed"
+echo "exit"
+}| ./bin/rshell
+
+echo "hack the CIA || echo this should be printed"
+
+{
+echo "hack the CIA || echo this should be printed"
+echo "exit"
+}| ./bin/rshell
+
+echo "echo round 5 && echo this should be printed || echo but this should not"
+
+{
+echo "echo round 5 && echo this should be printed || echo but this should not"
+echo "exit"
+}| ./bin/rshell
+
+echo "bake a cake && echo this should not be printed || echo nor should this"
+
+{
+echo "bake a cake && echo this should not be printed || echo nor should this"
+echo "exit"
+}| ./bin/rshell
