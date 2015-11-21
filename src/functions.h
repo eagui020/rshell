@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
@@ -31,29 +32,145 @@ void terminalPrompt() //Loads the username or
     return;
 }
 
-pair<vector<string>, vector<char> > parse(string line){
+bool FileExists(string file)
+{
+    // FInd and delete [] or test
+    if (file.find("[") != string::npos)
+    {
+        file.erase(file.begin());
+        file.erase(file.end() - 1);
+        // cout << file << endl;
+    }
+    if (file.find("test") != string::npos)
+    {
+        int tempPos = file.find("test");
+        file.erase(tempPos, 4);
+    }
+    
+    // Finds flag and saves it, deleting after
+    char flag = 'e';
+    if (file.find("-f") != string::npos)
+    {
+        // cout << "-f found" << endl;
+        flag = 'f';
+        int tempPos = file.find("-f");
+        file.erase(tempPos, 2);
+    }
+    else if (file.find("-d") != string::npos)
+    {
+        // cout << "-d found" << endl;
+        flag = 'd';
+        int tempPos = file.find("-d");
+        file.erase(tempPos, 2);
+    }
+    else if (file.find("-e") != string::npos)
+    {
+        // cout << "-e found" << endl;
+        flag = 'e';
+        int tempPos = file.find("-e");
+        file.erase(tempPos, 2);
+    }
+    else if (file.find("-") != string::npos)
+    {
+        cout << "Invalid flag" << endl;
+        return false;
+    }
+    while(file.at(file.size() - 1) == ' ') //delete spaces after
+    {
+        file.erase(file.end() - 1);
+    }
+    while(file.at(0) == ' ') //delete spaces before
+    {
+        file.erase(0, 1);
+    }
+    if(file.at(0) == '/') //remove first slash
+    {
+        file.erase(file.end() - 1);
+    }
+    
+    
+    
+    // cout << "Goes in here" << endl;
+    struct stat buffer;
+    // cout << file.c_str() << endl;
+    
+    
+    if(stat(file.c_str(), &buffer) == -1) // Not a file or direct
+    {
+        cout << "Not found" << endl;
+        return false;
+    }
+    else
+    {
+        if (flag == 'f')
+        {
+            // cout << "-f found" << endl;
+            return ((S_ISREG(buffer.st_mode)) != 0);
+        }
+        else if (flag == 'd')
+        {
+            // cout << "-d found" << endl;
+            return ((S_ISDIR(buffer.st_mode)) != 0);
+        }
+        else
+        {
+            // cout << "no flag or -e found" << endl;
+            return true;
+        }
+    }
+}
+
+pair<vector<string>, vector<char> > bigParse(string line){
 //function gets a full command line as a parameter
 //and returns a pair of vectors: the first is a
 //vector of idividual commands and args 
 //the second is a vector of connector in the order they appear
+
+//cout << "begin bigParse" << endl; //TEST ONLY
     vector<char> connectors;
     vector<string> commands;
-    char delimit[]= ";&|#"; //delimiters used by strtok
+    char delimit[]= "()"; //delimiters used by strtok
+    bool insideParenthasis=0;
+    bool inQuotes = false;
     
-    //get commands
-    for(unsigned int i=0; i<line.size(); i++){
-        if(line.at(i)=='&' && line.at(i+1) == '&'){
-            connectors.push_back('&');
+    //get connectors
+    for(unsigned int i=0; i<line.size(); i++)
+    {
+        if(line.at(i)== '(' ){
+            insideParenthasis=1;
         }
-        else if(line.at(i)=='|' && line.at(i+1) == '|'){
-            connectors.push_back('|');
+        else if(line.at(i)== ')' ){
+            insideParenthasis=0;
         }
-        else if(line.at(i)==';'){
-            connectors.push_back(';');
+        else if(line.at(i) == '"' && (!inQuotes))
+        {
+            inQuotes = true;
         }
-        else if(line.at(i)=='#'){
-            connectors.push_back('#');
+        else if(line.at(i) == '"' && (inQuotes))
+        {
+            inQuotes = false;
         }
+        if(!insideParenthasis && !inQuotes){
+            if(line.at(i)=='&' && line.at(i+1) == '&'){
+                connectors.push_back('&');
+                line.at(i)=')';
+                line.erase(i+1,1);
+            }
+            else if(line.at(i)=='|' && line.at(i+1) == '|'){
+                connectors.push_back('|');
+                line.at(i)=')';
+                line.erase(i+1,1);
+            }
+            else if(line.at(i)==';'){
+                connectors.push_back(';');
+                line.at(i)=')';
+            }
+            else if(line.at(i)=='#'){
+                connectors.push_back('#');
+                line.at(i)=')';
+            }    
+        }
+        
     }
     
     
@@ -66,15 +183,17 @@ pair<vector<string>, vector<char> > parse(string line){
     while(linePoint != NULL){
         string newCommand = string(linePoint);
             for(unsigned int i=0; i<newCommand.size(); i++){
-                if(newCommand.at(0)==' '){
+                while(!newCommand.empty() && newCommand.at(0)==' '){ //remove spaces infront 
                     newCommand.erase(0,1);
                 }
-                if(newCommand.at(newCommand.size()-1)==' '){
+                while(!newCommand.empty() && newCommand.at(newCommand.size()-1)==' '){ //remove spaces in back  
                     newCommand.erase(newCommand.size()-1,1);
                 }
             }
-            commands.push_back(newCommand);
-        
+            if(!newCommand.empty() && newCommand!="&&" && newCommand!="||" )
+            {
+                commands.push_back(newCommand);
+            }
         
         linePoint = strtok(NULL, delimit);
     }
@@ -82,6 +201,120 @@ pair<vector<string>, vector<char> > parse(string line){
     pair< vector<string>, vector<char> > endPair 
                             = make_pair(commands, connectors);
     delete[] charLine;
+//TEST ONLY
+// cout << "command vector = " << endl;
+// for (unsigned int i=0; i < commands.size(); i++){
+//     cout << commands.at(i) << endl; 
+// }
+// cout << "connector vector = " << endl;
+// for (unsigned int i=0; i < connectors.size(); i++){
+//     cout << connectors.at(i) << endl; 
+// }  
+// cout << "end bigParse" << endl;
+//TEST ONLY
+    return endPair;
+}
+
+pair<vector<string>, vector<char> > parse(string line){
+//function gets a full command line as a parameter
+//and returns a pair of vectors: the first is a
+//vector of idividual commands and args 
+//the second is a vector of connector in the order they appear
+//cout << "begin Parse" << endl; //TEST ONLY
+vector<char> connectors;
+    vector<string> commands;
+    bool inQuotes = false;
+    char delimit[]= ";&|#"; //delimiters used by strtok
+    
+    vector<string> quotedLines;
+    //get commands
+    for(unsigned int i=0; i<line.size(); i++){
+        if(line.at(i) == '"' && (!inQuotes))
+        {
+            inQuotes = true;
+            string str;
+            int j = i + 1;
+            while(line.at(j) != '"')
+            {
+                str.push_back(line.at(j));
+                ++j;
+            }
+            quotedLines.push_back(str);
+        }
+        else if(line.at(i) == '"' && (inQuotes))
+        {
+            inQuotes = false;
+        }
+        else if(!inQuotes)
+        {
+            if(line.at(i)=='&' && line.at(i+1) == '&'){
+                connectors.push_back('&');
+            }
+            else if(line.at(i)=='|' && line.at(i+1) == '|'){
+                connectors.push_back('|');
+            }
+            else if(line.at(i)==';'){
+                connectors.push_back(';');
+            }
+            else if(line.at(i)=='#'){
+                connectors.push_back('#');
+            }
+        }
+    }
+    for (unsigned int i = 0; i < quotedLines.size(); ++i)
+    {
+        int quotedSize = quotedLines.at(i).size();
+        size_t found = line.find(quotedLines.at(i));
+        if (found != string::npos)
+        {
+            for(int i = 0; i <= quotedSize; ++i)
+            {
+                line.erase(line.begin() + found);
+            }
+        }
+    }
+    
+    //create char pointer for use with strtok
+    char* charLine = new char[line.size()+1];
+    copy(line.begin(), line.end(), charLine);
+    charLine[line.size()]='\0';
+    int quotedLinesPlace = 0;
+    
+    char *linePoint = strtok(charLine, delimit);
+    while(linePoint != NULL){
+        string newCommand = string(linePoint);
+        for(unsigned int i=0; i<newCommand.size(); i++){
+            if(newCommand.at(0)==' '){
+                newCommand.erase(0,1);
+            }
+            if(newCommand.at(newCommand.size()-1)==' '){
+                newCommand.erase(newCommand.size()-1,1);
+            }
+        }
+        size_t quotePos = newCommand.find('"');
+        if(quotePos != string::npos)
+        {
+            newCommand.erase(newCommand.begin() + quotePos);
+            newCommand.append(quotedLines.at(quotedLinesPlace));
+            commands.push_back(newCommand);
+            ++quotedLinesPlace;
+        }
+        else
+        {
+            commands.push_back(newCommand);
+        }
+        linePoint = strtok(NULL, delimit);
+    }
+    
+    // for (unsigned int i = 0; i < commands.size(); ++i)
+    // {
+    //     cout << commands[i] << endl;
+    // }
+    
+    pair< vector<string>, vector<char> > endPair 
+                            = make_pair(commands, connectors);
+    delete[] charLine;
+//cout << "end Parse" << endl; //TEST ONLY
     return endPair;
 }
 
@@ -157,20 +390,10 @@ int executeProgram(char **commandLine)
     }
 }
 
-void shell()
+bool  execCmdSegment(pair<vector<string>, vector<char> > parsedInfo)
 {
-    while(1)
-    {
-        terminalPrompt(); // display terminal promt
-        
-        string rawLine;
-        getline(cin, rawLine); // get full raw command line
-        
-        pair<vector<string>, vector<char> > parsedInfo = parse(rawLine);
-        //parse raw line into vector of command and vector of connecors
-        
-        
-        for(unsigned int i=0; i<parsedInfo.first.size(); i++)
+    bool validity = true;
+    for(unsigned int i=0; i<parsedInfo.first.size(); i++)
         {
             //construct array of cstring for individual commadn + arguments
             char ** charCommand = new char *[parsedInfo.first.at(i).size()];
@@ -181,25 +404,98 @@ void shell()
             if(strcmp(charCommand[0], "exit")==0){
                 exit(0);
             }
-            
-            //execute command and save return status
-            int cmdStatus = executeProgram(charCommand); 
-            
+            // cout << charCommand[0] << endl;
+            // cout << parsedInfo.first.at(i) << endl;
+            if((parsedInfo.first.at(i).find("test") != string::npos) || 
+                    parsedInfo.first.at(i).find("[") != string::npos)
+            {
+                // cout << parsedInfo.first.at(i) << endl;
+                validity = FileExists(parsedInfo.first.at(i));
+            }
+            else
+            {
+                //execute command and save return status
+                int cmdStatus = executeProgram(charCommand); 
+                if ( cmdStatus == -1)
+                {
+                    validity = false;    
+                }
+                else 
+                {
+                    validity = true;
+                }
+            }
             //if another command exists after i
-            if(i + 1 < parsedInfo.first.size())
+            if(i + 1 < parsedInfo.first.size() )
             {
                 //cout << parsedInfo.second.at(i);
                 if(parsedInfo.second.at(i)=='#') //check connectors and status 
                 {
                     break;
                 }
-		        else if((parsedInfo.second.at(i)=='&' && cmdStatus<0) ||
-                            (parsedInfo.second.at(i)=='|' && cmdStatus==0))
+		        else if((parsedInfo.second.at(i)=='&' && !validity) ||
+                            (parsedInfo.second.at(i)=='|' && validity))
 		        {
-		            ++i; //Skip next command
+		            while ((parsedInfo.second.at(i)=='&' && !validity) ||
+                            (parsedInfo.second.at(i)=='|' && validity))
+                            {
+                                ++i; //Skip next command
+                                if (i >= parsedInfo.second.size())
+                                {
+                                    break;
+                                }
+                            }
 		        }
             }
             delete[] charCommand;
+        }
+        
+        return validity;
+}
+
+void shell()
+{
+    while(1)
+    {
+        terminalPrompt(); // display terminal promt
+        
+        string rawLine;
+        getline(cin, rawLine); // get full raw command line
+        
+        //parse raw line into vector of command segments and vector of connecors
+        pair<vector<string>, vector<char> > parsedLine = bigParse(rawLine);
+        
+        for(unsigned int i=0; i<parsedLine.first.size(); i++)
+        {
+            // for each segment 
+            pair<vector<string>, vector<char> > cmdSegment = 
+                                                parse(parsedLine.first.at(i));
+            
+            //execute the segment and save the result 
+            bool lastCmdValidity = execCmdSegment(cmdSegment);
+            
+            //if another command exists after i
+            if(i + 1 < parsedLine.first.size() )
+            {
+                //check connectors;
+                if(parsedLine.second.at(i)=='#') //check connectors and status 
+                {
+                    break;
+                }
+		        else if((parsedLine.second.at(i)=='&' && !lastCmdValidity) ||
+                            (parsedLine.second.at(i)=='|' && lastCmdValidity))
+		        {
+		            while ((parsedLine.second.at(i)=='&' && !lastCmdValidity) ||
+                            (parsedLine.second.at(i)=='|' && lastCmdValidity))
+                            {
+                                ++i; //Skip next command
+                                if (i >= parsedLine.second.size())
+                                {
+                                    break;
+                                }
+                            }
+		        }
+            }
         }
     }
 }

@@ -1,0 +1,28 @@
+Script started on Fri 20 Nov 2015 04:31:41 PM PST
+[eagui020@hammer rshell]$ make all
+g++ -Wall -Werror -ansi -pedantic src/rshell.cpp -o bin/rshell
+[eagui020@hammer rshell]$ bin/rshell
+[eagui020@hammer.cs.ucr.edu]$ test bin/rshell && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ test -ddbin/rshell && echo working
+[eagui020@hammer.cs.ucr.edu]$ test -f bin/rshell && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ test -e bin/rshell && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ test -d bin && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ [bin] && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ [bin/rshell] && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ [ -d bin ] && echo working
+working
+[eagui020@hammer.cs.ucr.edu]$ [asdfsdf] && echo not working
+Not found
+[eagui020@hammer.cs.ucr.edu]$ test asdasdfa && echo this wont echo
+Not found
+[eagui020@hammer.cs.ucr.edu]$ exit
+[eagui020@hammer rshell]$ exit
+exit
+
+Script done on Fri 20 Nov 2015 04:35:05 PM PST

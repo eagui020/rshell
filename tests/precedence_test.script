@@ -1,0 +1,26 @@
+[atali001@hammer rshell]$ bin/rshell
+[atali001@hammer.cs.ucr.edu]$ (echo a && echo b) && (echo c && echo d)
+a
+b
+c
+d
+[atali001@hammer.cs.ucr.edu]$ (echo a && echo b) || (echo c && echo d)
+a
+b
+[atali001@hammer.cs.ucr.edu]$ (echo a || echo b) && (echo c || echo d)
+a
+c
+[atali001@hammer.cs.ucr.edu]$ (burp the baby && echo done)i&&techo yay
+Command execution failed. Command 'burp' not found.
+[atali001@hammer.cs.ucr.edu]$ badCmd && (echo a && echo b)
+Command execution failed. Command 'badCmd' not found.
+[atali001@hammer.cs.ucr.edu]$ badCmd || (echo a && echo b)
+Command execution failed. Command 'badCmd' not found.
+a
+b
+[atali001@hammer.cs.ucr.edu]$ (echo a && badCmd) && echo b
+a
+Command execution failed. Command 'badCmd' not found.
+[atali001@hammer.cs.ucr.edu]$ exit
+[atali001@hammer rshell]$ exit
+exit
