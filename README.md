@@ -13,6 +13,7 @@ and has a built in **exit** function.
 
 ## Tests
 
+<<<<<<< HEAD
 single_command.sh #tests single commands
 
 multi_command.sh #tests commands with ;, &&, or ||
@@ -20,6 +21,19 @@ multi_command.sh #tests commands with ;, &&, or ||
 commented_command.sh #tests commands with comments
 
 exit.sh #tests exit and commands with exit
+=======
+single_command.script #tests single commands
+
+multi_command.script #tests commands with ;, &&, or ||
+
+commented_command.script #tests commands with comments
+
+exit.script #tests exit and commands with exit
+
+test_command.script #tests the test([]) command with connectors
+
+precedence_test.script #tests the use of parenthesis
+>>>>>>> test
 
 ## List of Known Bugs
 
