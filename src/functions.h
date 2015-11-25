@@ -41,7 +41,7 @@ bool FileExists(string file)
         file.erase(file.end() - 1);
         // cout << file << endl;
     }
-    if (file.find("test") != string::npos)
+    if (file.find("test ") != string::npos)
     {
         int tempPos = file.find("test");
         file.erase(tempPos, 4);
