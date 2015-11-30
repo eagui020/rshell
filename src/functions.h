@@ -11,6 +11,9 @@
 #include <cstring>
 #include <utility>
 #include <vector>
+#include "Copy.h"
+#include "Timer.h"
+#include <sstream>
 
 using namespace std;
 
@@ -117,6 +120,111 @@ bool FileExists(string file)
             // cout << "no flag or -e found" << endl;
             return true;
         }
+    }
+}
+
+bool CopyFiles(string files)
+{
+    vector<string> argv; // Simulate command line arguments
+    string buffer; // Used to push arguments into argv
+    stringstream ss(files); // Insert the filenames into stream
+    while (ss >> buffer)
+    {
+        argv.push_back(buffer);
+    }
+    int argc = argv.size();
+    
+    if (argc == 3)
+    {
+        if(FileExists(argv[1]))
+        {
+            if(!FileExists(argv[2]))
+            {
+                Timer a;
+                // //Timer b;
+                // double bTime;
+                // a.start();
+                // copyFstream(argv[1], argv[2]);
+                // a.elapsedSystemTime(bTime);
+                // cout << bTime << endl;
+                
+                
+                double aTime;
+                a.start();
+                cout << "Copying..." << endl;
+                CopyStyleUnixBuffer(argv[1], argv[2]);
+                a.elapsedSystemTime(aTime);
+                cout << "Elapsed time: " << aTime << endl;
+                
+                // double cTime;
+                // a.start();
+                // CopyStyleUnix(argv[1], argv[2]);
+                // a.elapsedSystemTime(cTime);
+                // cout << cTime << endl;
+                return 1;
+            }
+            else
+            {
+                cout << "Dest file exists." << endl;
+                return 0;
+            }
+        }
+        else
+        {
+            cout << "Src doesn't exist." << endl;
+            return 0;
+        }
+    }
+    else if(argc == 4)
+    {
+        if(FileExists(argv[1]))
+        {
+            if(!(FileExists(argv[2])))
+            {
+                Timer a;
+                double bTime;
+                a.start();
+                cout << "Copying..." << endl;
+                copyFstream(argv[1], argv[2]);
+                a.elapsedSystemTime(bTime);
+                cout << "Elapsed time: " << bTime << endl;
+                
+                //remove(argv[2]);
+                
+                double cTime;
+                a.start();
+                cout << "Copying..." << endl;
+                CopyStyleUnix(argv[1], argv[2]);
+                a.elapsedSystemTime(cTime);
+                cout << "Elapsed time: " << cTime << endl;
+                
+                //remove(argv[2]);
+                
+                double aTime;
+                a.start();
+                cout << "Copying..." << endl;
+                CopyStyleUnixBuffer(argv[1], argv[2]);
+                a.elapsedSystemTime(aTime);
+                cout << "Elapsed time: " << aTime << endl;
+                
+                return 1;
+            }
+            else
+            {
+                cout << "Dest file exists." << endl;
+                return 0;
+            }
+        }
+        else
+        {
+            cout << "Src doesn't exist." << endl;
+            return 0;
+        }
+    }
+    else
+    {
+        cout << "Not enough arguments given" << endl;
+        return 0;
     }
 }
 
@@ -406,11 +514,15 @@ bool  execCmdSegment(pair<vector<string>, vector<char> > parsedInfo)
             }
             // cout << charCommand[0] << endl;
             // cout << parsedInfo.first.at(i) << endl;
-            if((parsedInfo.first.at(i).find("test") != string::npos) || 
+            if((parsedInfo.first.at(i).find("test ") != string::npos) || 
                     parsedInfo.first.at(i).find("[") != string::npos)
             {
                 // cout << parsedInfo.first.at(i) << endl;
                 validity = FileExists(parsedInfo.first.at(i));
+            }
+            else if(parsedInfo.first.at(i).find("copy ") != string::npos)
+            {
+                validity = CopyFiles(parsedInfo.first.at(i));
             }
             else
             {
